@@ -126,7 +126,8 @@ export function WaitingRoomPage() {
       socket.off('player_joined');
       socket.off('player_left');
     };
-  }, [gameCode, playerId, initializeListeners, cleanup]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameCode, playerId]); // Removed initializeListeners & cleanup - they're stable
   
   // Handle start game (host only)
   const handleStartGame = () => {
