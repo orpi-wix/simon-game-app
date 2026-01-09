@@ -41,24 +41,21 @@ interface ColorButtonProps {
 // =============================================================================
 
 const ColorButton: React.FC<ColorButtonProps> = ({ color, isActive, onClick, disabled }) => {
-  // Base color classes
-  const colorClasses: Record<Color, string> = {
-    red: 'bg-red-500 hover:bg-red-600',
-    blue: 'bg-blue-500 hover:bg-blue-600',
-    yellow: 'bg-yellow-400 hover:bg-yellow-500',
-    green: 'bg-green-500 hover:bg-green-600',
+  // Get inline styles for colors (Tailwind purges Record-based classes)
+  const getButtonStyle = (buttonColor: Color, active: boolean) => {
+    const colors = {
+      red: { base: '#ef4444', light: '#fca5a5', hover: '#dc2626' },
+      blue: { base: '#3b82f6', light: '#93c5fd', hover: '#2563eb' },
+      yellow: { base: '#facc15', light: '#fef08a', hover: '#eab308' },
+      green: { base: '#22c55e', light: '#86efac', hover: '#16a34a' },
+    };
+    
+    return {
+      backgroundColor: active ? colors[buttonColor].light : colors[buttonColor].base,
+      transform: active ? 'scale(1.15)' : 'scale(1)',
+      filter: active ? 'brightness(1.5)' : 'brightness(1)',
+    };
   };
-  
-  // Active state classes (brighter)
-  const activeClasses: Record<Color, string> = {
-    red: 'bg-red-300 brightness-150 scale-110',
-    blue: 'bg-blue-300 brightness-150 scale-110',
-    yellow: 'bg-yellow-200 brightness-150 scale-110',
-    green: 'bg-green-300 brightness-150 scale-110',
-  };
-  
-  const baseClass = colorClasses[color];
-  const activeClass = activeClasses[color];
   
   return (
     <button
@@ -67,13 +64,15 @@ const ColorButton: React.FC<ColorButtonProps> = ({ color, isActive, onClick, dis
       className={`
         w-[min(40vw,140px)] h-[min(40vw,140px)] sm:w-44 sm:h-44 md:w-48 md:h-48 
         rounded-xl sm:rounded-2xl 
-        transition-all duration-75 
+        transition-all duration-200
         shadow-lg
         touch-action-manipulation
-        ${isActive ? activeClass : baseClass}
         ${disabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer active:scale-95'}
       `}
-      style={{ touchAction: 'manipulation' }}
+      style={{
+        touchAction: 'manipulation',
+        ...getButtonStyle(color, isActive),
+      }}
       aria-label={`${color} button`}
     >
       <span className="sr-only">{color}</span>
@@ -109,9 +108,9 @@ export const SimonBoard: React.FC<SimonBoardProps> = ({
       return;
     }
     
-    // Animation constants (matching backend)
-    const SHOW_DURATION = 1000; // 1 second per color
-    const SHOW_GAP = 200; // 200ms gap between colors
+    // Animation constants - make sequence VERY clear
+    const SHOW_DURATION = 800; // 800ms per color (was 1000ms backend, but 600ms in constant)
+    const SHOW_GAP = 300; // 300ms gap between colors
     
     let currentIndex = 0;
     let timeoutId: number;
@@ -189,11 +188,17 @@ export const SimonBoard: React.FC<SimonBoardProps> = ({
           {disabled 
             ? '👻 Spectating...' 
             : isShowingSequence 
-              ? '👀 Watch the sequence!' 
+              ? '👀 WATCH!' 
               : isInputPhase
                 ? '🎮 Your turn!' 
                 : '✅ Ready'}
         </p>
+        {/* Show sequence length during animation */}
+        {isShowingSequence && (
+          <p className="text-lg sm:text-xl font-bold text-yellow-400 mt-1">
+            {sequence.length} color{sequence.length > 1 ? 's' : ''} to remember
+          </p>
+        )}
       </div>
       
       {/* Timer Display (Step 3) */}
