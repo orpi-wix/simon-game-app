@@ -1,0 +1,77 @@
+# Simon Game App - Project Rules
+
+## Deployment Configuration (Render)
+
+### Services
+
+| Service | Type | URL | Service ID |
+|---------|------|-----|------------|
+| **Backend** | Web Service (Node) | https://simon-game-backend-n53s.onrender.com | srv-d5hpkel6ubrc7385u2lg |
+| **Frontend** | Static Site | https://simon-game-frontend-ozgt.onrender.com | srv-d5hpfm6r433s73btpgog |
+
+### Repository
+- **GitHub:** https://github.com/orpi-wix/simon-game-app
+- **Branch:** main
+- **Auto-deploy:** Yes (on commit to main)
+
+### Backend Configuration
+- **Runtime:** Node.js 20.18.0 (see `.node-version`)
+- **Build Command:** `npm install && npm run build`
+- **Start Command:** `npm start`
+- **Plan:** Starter ($7/month)
+- **Region:** Oregon
+
+### Frontend Configuration
+- **Build Command:** `cd frontend && npm install && npm run build`
+- **Publish Path:** `frontend/dist`
+- **Plan:** Starter (free tier)
+- **Region:** Oregon
+
+### Environment Variables
+
+**Backend (simon-game-backend):**
+| Variable | Value |
+|----------|-------|
+| `NODE_ENV` | `production` |
+| `PORT` | `10000` |
+| `JWT_SECRET` | `simon-game-secret-key-2026` |
+| `FRONTEND_URL` | `https://simon-game-frontend-ozgt.onrender.com` |
+
+**Frontend (simon-game-frontend):**
+| Variable | Value |
+|----------|-------|
+| `VITE_API_URL` | `https://simon-game-backend-n53s.onrender.com` |
+| `VITE_SOCKET_URL` | `https://simon-game-backend-n53s.onrender.com` |
+
+### Render Dashboards
+- Backend: https://dashboard.render.com/web/srv-d5hpkel6ubrc7385u2lg
+- Frontend: https://dashboard.render.com/static/srv-d5hpfm6r433s73btpgog
+
+---
+
+## NPM Registry
+
+This project uses `.npmrc` files to force the public npm registry:
+```
+registry=https://registry.npmjs.org/
+```
+
+This is necessary because the developer's machine uses a corporate registry (Wix) that blocks newer packages.
+
+---
+
+## Important Notes
+
+1. **TypeScript Config:** Don't use `erasableSyntaxOnly` or `noUncheckedSideEffectImports` in tsconfig files - they're not supported by all TypeScript versions on Render.
+
+2. **Package Lock Files:** Always commit `package-lock.json` and `frontend/package-lock.json` for faster, more reliable builds on Render.
+
+3. **Node Version:** Pinned to 20.18.0 via `.node-version` files in root and frontend directories.
+
+4. **Deployment Workflow:**
+   - Push to `main` branch → Auto-deploy triggers on Render
+   - Or manually trigger via Render dashboard
+
+5. **Git Remotes:**
+   - `origin` → https://github.com/orpi-wix/simon-game-app-cday (fork)
+   - `newrepo` → https://github.com/orpi-wix/simon-game-app (deployment repo)
